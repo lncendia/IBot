@@ -12,13 +12,15 @@ public class User
         Id = Guid.NewGuid();
         TelegramId = telegramId;
     }
-    
+
     public Guid Id { get; }
+
     public long TelegramId { get; }
     public State State { get; set; } = State.Main;
     public bool IsBanned { get; set; }
     public bool IsAdmin { get; set; }
-
+    public string? TempProductPreview { get; set; }
+    public string? TempProduct { get; set; }
     public decimal Balance { get; private set; }
 
     private readonly List<Guid> _products = new();

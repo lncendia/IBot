@@ -7,8 +7,7 @@ namespace IBot.BLL.TextCommands;
 
 public class BanCommand : ITextCommand
 {
-    public async Task Execute(ITelegramBotClient client, User? user, Message message,
-        ServiceContainer serviceContainer)
+    public async Task Execute(ITelegramBotClient client, User? user, Message message, ServiceContainer serviceContainer)
     {
         await client.SendTextMessageAsync(message.Chat.Id,
             $"Вы были заблокированы. Для обжалования обратитесь в поддержку: {serviceContainer.Configuration.HelpUsername}.");

@@ -1,5 +1,4 @@
-using IBot.Core.Interfaces.Services;
-using IBot.Core.Interfaces.Services.BusinesLogic;
+using IBot.Core.Interfaces.Services.BusinessLogic;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
 

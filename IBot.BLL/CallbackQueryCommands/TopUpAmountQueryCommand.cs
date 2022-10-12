@@ -1,12 +1,13 @@
 using IBot.BLL.Interfaces;
 using IBot.BLL.Keyboards.UserKeyboard;
+using IBot.Core.Entities.Users.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using User = IBot.Core.Entities.Users.User;
 
 namespace IBot.BLL.CallbackQueryCommands;
 
-public class BuySubscribeQueryCommand : ICallbackQueryCommand
+public class TopUpAmountQueryCommand : ICallbackQueryCommand
 {
     public async Task Execute(ITelegramBotClient client, User? user, CallbackQuery query,
         ServiceContainer serviceContainer)
@@ -17,15 +18,12 @@ public class BuySubscribeQueryCommand : ICallbackQueryCommand
             return;
         }
 
+        user.State = State.EnterAmount;
+        await serviceContainer.UnitOfWork.UserRepository.Value.UpdateAsync(user);
+        await serviceContainer.UnitOfWork.SaveAsync();
         await client.EditMessageTextAsync(query.From.Id, query.Message!.MessageId,
-            $"Введите количество аккаунтов, которые хотите добавить. Цена одного аккаунта - {serviceContainer.Configuration.Cost} рублей/30 дней.",
-            replyMarkup: MainKeyboard.Main);
-        user.State = State.EnterCountToBuy;
-        await serviceContainer.UserService.UpdateAsync(user);
+            $"Введите сумму, на которую хотите пополнить счёт. Минимальная сумма - 100 рублей.", replyMarkup: MainKeyboard.Main);
     }
 
-    public bool Compare(CallbackQuery query, User? user)
-    {
-        return query.Data == "buySubscribe";
-    }
+    public bool Compare(CallbackQuery query, User? user) => query.Data == "buySubscribe";
 }

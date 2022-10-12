@@ -15,8 +15,5 @@ public class HelpCommand : ITextCommand
             $"За поддержкой вы можете обратиться к {serviceContainer.Configuration.HelpUsername}.");
     }
 
-    public bool Compare(Message message, User? user)
-    {
-        return message.Type == MessageType.Text && message.Text == "🤝 Поддержка";
-    }
+    public bool Compare(Message message, User? user) => message.Type == MessageType.Text && message.Text == "🤝 Поддержка";
 }

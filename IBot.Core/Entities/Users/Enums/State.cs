@@ -3,7 +3,10 @@
 public enum State
 {
     Main,
+    EnterAmount,
     MailingAdmin,
     BanAdmin,
-    UploadProductAdmin
+    UploadProductPreviewAdmin,
+    UploadProductAdmin,
+    EnterNameAndAmountAdmin
 }

@@ -2,10 +2,7 @@
 
 public class Configuration
 {
-    public Configuration(string helpUsername)
-    {
-        HelpUsername = helpUsername;
-    }
-    
+    public Configuration(string helpUsername) => HelpUsername = helpUsername;
+
     public string HelpUsername { get; }
 }

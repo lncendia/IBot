@@ -10,6 +10,7 @@
       <ProjectReference Include="..\IBot.BLL\IBot.BLL.csproj" />
       <ProjectReference Include="..\IBot.Core\IBot.Core.csproj" />
       <ProjectReference Include="..\IBot.DAL\IBot.DAL.csproj" />
+      <ProjectReference Include="..\IBot.PaymentSystem\IBot.PaymentSystem.csproj" />
       <ProjectReference Include="..\IBot.WEB\IBot.WEB.csproj" />
     </ItemGroup>
 

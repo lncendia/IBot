@@ -35,9 +35,9 @@ public class MyTransactionsQueryCommand : ICallbackQueryCommand
         }
 
         await client.EditMessageTextAsync(query.From.Id, query.Message!.MessageId,
-            $"<b>Сумма:</b> <code>{transaction.Cost}</code> руб.\n<b>Кошелёк:</b> <code>{transaction.Wallet}</code>",
+            $"<b>Сумма:</b> <code>{transaction.Cost}</code> руб.\n<b>Дата:</b> <code>{transaction.Date.ToLocalTime():g}</code>",
             ParseMode.Html,
-            replyMarkup: PaymentKeyboard.GetTransaction(transaction, page, page <= user.Transactions.Count));
+            replyMarkup: PaymentKeyboard.MyTransactions(page, page <= user.Transactions.Count));
     }
 
     public bool Compare(CallbackQuery query, User? user) => query.Data!.StartsWith("myTransactions_");

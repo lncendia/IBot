@@ -2,7 +2,8 @@ using IBot.BLL.CallbackQueryCommands;
 using IBot.BLL.Interfaces;
 using IBot.BLL.TextCommands;
 using IBot.Core.Interfaces.Repositories;
-using IBot.Core.Interfaces.Services;
+using IBot.Core.Interfaces.Services.BusinessLogic;
+using IBot.Core.Interfaces.Services.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -10,17 +11,18 @@ using Telegram.Bot.Types.Enums;
 
 namespace IBot.BLL.Services;
 
-public class UpdateHandler : IUpdateHandler<Update>
+public class UpdateHandler : IUpdateHandler
 {
     private readonly ITelegramBotClient _botClient;
     private readonly ILogger<UpdateHandler> _logger;
     private readonly ServiceContainer _serviceContainer;
 
-    public UpdateHandler(ITelegramBotClient botClient, ILogger<UpdateHandler> logger, IUnitOfWork uw)
+    public UpdateHandler(ITelegramBotClient botClient, IPaymentCreationService paymentCreationService,
+        ILogger<UpdateHandler> logger, IUnitOfWork uw, string helpName)
     {
         _botClient = botClient;
         _logger = logger;
-        _serviceContainer = new ServiceContainer(uw);
+        _serviceContainer = new ServiceContainer(uw, new Configuration(helpName), paymentCreationService);
     }
 
     private static readonly List<ITextCommand> TextCommands = new()
@@ -28,20 +30,33 @@ public class UpdateHandler : IUpdateHandler<Update>
         new StartCommand(),
         new BanCommand(),
         new SendKeyboardCommand(),
-        new EnterMessageToMailingCommand(),
         new AdminMailingCommand(),
-
-        //Do not depend on the state
+        new AdminUploadCommand(),
+        new PaymentCommand(),
+        new ProductsCommand(),
         new HelpCommand(),
         new PaymentCommand(),
+
+
+        new EnterMessageToMailingCommand(),
+        new EnterAmountCommand(),
+        new EnterProductNameAndAmountCommand(),
+        new UploadPreviewCommand(),
+        new UploadProductCommand()
     };
 
     private static readonly List<ICallbackQueryCommand> CallbackQueryCommands = new()
     {
         new BillQueryCommand(),
+        new BuyProductQueryCommand(),
+        new TopUpAmountQueryCommand(),
         new MainMenuQueryCommand(),
-        new MyPaymentsQueryCommand(),
-        new BuySubscribeQueryCommand(),
+        new MyProductsQueryCommand(),
+        new MyTransactionsQueryCommand(),
+        new ProductQueryCommand(),
+        new ProductsQueryCommand(),
+        new MainMenuQueryCommand(),
+        new TopUpAmountQueryCommand(),
     };
 
     public async Task HandleAsync(Update update)
@@ -67,7 +82,8 @@ public class UpdateHandler : IUpdateHandler<Update>
 
     private async Task BotOnCallbackQueryReceived(CallbackQuery updateCallbackQuery)
     {
-        var user = await _serviceContainer.UnitOfWork.UserRepository.Value.GetByTelegramIdAsync(updateCallbackQuery.From.Id);
+        var user =
+            await _serviceContainer.UnitOfWork.UserRepository.Value.GetByTelegramIdAsync(updateCallbackQuery.From.Id);
 
         var command = CallbackQueryCommands.FirstOrDefault(command => command.Compare(updateCallbackQuery, user));
         if (command != null)

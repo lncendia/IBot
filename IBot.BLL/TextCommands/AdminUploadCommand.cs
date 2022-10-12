@@ -8,16 +8,14 @@ using User = IBot.Core.Entities.Users.User;
 
 namespace IBot.BLL.TextCommands;
 
-public class AdminUploadProductCommand : ITextCommand
+public class AdminUploadCommand : ITextCommand
 {
     public async Task Execute(ITelegramBotClient client, User? user, Message message, ServiceContainer serviceContainer)
     {
         if (user!.State is State.Main)
         {
-            await client.SendTextMessageAsync(message.From!.Id,
-                "Введите страницу и сообщение, которое хотите разослать.\nПример: <code>1:Привет, я бот!</code>\nОдна страница - 500 пользователей.",
-                ParseMode.Html, replyMarkup: MainKeyboard.Main);
-            user.State = State.MailingAdmin;
+            await client.SendTextMessageAsync(message.From!.Id, "Отправьте фото, которое будет отображаться в списке продуктов.", replyMarkup: MainKeyboard.Main);
+            user.State = State.UploadProductPreviewAdmin;
         }
         else
         {
@@ -31,6 +29,6 @@ public class AdminUploadProductCommand : ITextCommand
     }
 
     public bool Compare(Message message, User? user) =>
-        message.Type == MessageType.Text && message.Text!.StartsWith("/upload") &&
+        message.Type == MessageType.Text && message.Text! == "/upload" &&
         user!.State is State.Main && user.IsAdmin;
 }
