@@ -14,14 +14,14 @@ public static class PaymentKeyboard
             new() {InlineKeyboardButton.WithCallbackData("💵 Мои платежи", "myTransactions_1")}
         });
 
-    public static readonly InlineKeyboardMarkup PaySubscribe =
+    public static readonly InlineKeyboardMarkup TopUpAmount =
         new(InlineKeyboardButton.WithCallbackData("➕ Пополнить счёт", "buy"));
 
     public static InlineKeyboardMarkup MyTransactions(int page, bool hasNext)
     {
         var nav = new List<InlineKeyboardButton>();
         if (page != 1) nav.Add(InlineKeyboardButton.WithCallbackData("⬅", "myTransactions_" + (page - 1)));
-        nav.Add(InlineKeyboardButton.WithCallbackData(page.ToString()));
+        nav.Add(InlineKeyboardButton.WithCallbackData($"<{page.ToString()}>"));
         if (hasNext) nav.Add(InlineKeyboardButton.WithCallbackData("➡", "myTransactions_" + (page + 1)));
         return new InlineKeyboardMarkup(new List<List<InlineKeyboardButton>> {nav});
     }

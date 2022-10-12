@@ -19,7 +19,7 @@ public class ProductsQueryCommand : ICallbackQueryCommand
             return;
         }
 
-        var page = int.Parse(query.Data![10..]);
+        var page = int.Parse(query.Data![9..]);
         if (page < 1)
         {
             await client.AnswerCallbackQueryAsync(query.Id, "Вы в конце списка.");
@@ -36,8 +36,8 @@ public class ProductsQueryCommand : ICallbackQueryCommand
             return;
         }
 
-        await client.EditMessageReplyMarkupAsync(query.From.Id, query.Message!.MessageId,
-            ProductKeyboard.Create(products, page, products.Count == perPage));
+        await client.EditMessageTextAsync(query.From.Id, query.Message!.MessageId, "Выберите товар:",
+            replyMarkup: ProductKeyboard.Create(products, page, products.Count == perPage));
     }
 
     public bool Compare(CallbackQuery query, User? user) => query.Data!.StartsWith("products_");

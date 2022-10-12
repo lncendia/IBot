@@ -8,6 +8,8 @@ public class Product
         PreviewId = previewId;
         DataId = dataId;
         Name = name;
+        if(cost <= 0)
+            throw new ArgumentException("Cost cannot be less than 0");
         Cost = cost;
     }
 

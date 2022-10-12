@@ -6,7 +6,7 @@ public class UserProductModel
 {
     public int Id { get; set; }
     public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
+    public UserModel User { get; set; } = null!;
     
     public Guid ProductId { get; set; }
 }

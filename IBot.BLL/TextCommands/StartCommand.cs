@@ -15,12 +15,12 @@ public class StartCommand : ITextCommand
     {
         user = new User(message.From!.Id);
         await serviceContainer.UnitOfWork.UserRepository.Value.AddAsync(user);
-        var t1 = client.SendStickerAsync(message.From.Id,
-                new InputOnlineFile("CAACAgIAAxkBAAEDh2ZhwNXpm0Vikt-5J5yPWTbDPeUwvwAC-BIAAkJOWUoAAXOIe2mqiM0jBA"),
-                replyMarkup: MainKeyboard.MainReplyKeyboard);
-            var t2 = client.SendTextMessageAsync(message.Chat.Id,
-                "Привет", replyMarkup: PaymentKeyboard.PaySubscribe);
-            await Task.WhenAll(t1, t2);
+        await serviceContainer.UnitOfWork.SaveAsync();
+        await client.SendStickerAsync(message.From.Id,
+            new InputOnlineFile("CAACAgIAAxkBAAEDh2ZhwNXpm0Vikt-5J5yPWTbDPeUwvwAC-BIAAkJOWUoAAXOIe2mqiM0jBA"),
+            replyMarkup: MainKeyboard.MainReplyKeyboard);
+        await client.SendTextMessageAsync(message.Chat.Id,
+            "Привет", replyMarkup: PaymentKeyboard.TopUpAmount);
     }
 
     public bool Compare(Message message, User? user) => user is null;

@@ -19,7 +19,8 @@ public class BuyProductQueryCommand : ICallbackQueryCommand
             await client.AnswerCallbackQueryAsync(query.Id, "Вы должны быть в главное меню.");
             return;
         }
-        var id = Guid.Parse(query.Data![5..]);
+
+        var id = Guid.Parse(query.Data![4..]);
 
         var product = await serviceContainer.UnitOfWork.ProductRepository.Value.GetAsync(id);
         if (product == null)
@@ -40,9 +41,10 @@ public class BuyProductQueryCommand : ICallbackQueryCommand
 
         await serviceContainer.UnitOfWork.UserRepository.Value.UpdateAsync(user);
         await serviceContainer.UnitOfWork.SaveAsync();
-        
+
         await client.AnswerCallbackQueryAsync(query.Id, "Успешно.");
-        await client.SendDocumentAsync(query.From.Id, new InputOnlineFile(product.DataId));
+        await client.SendDocumentAsync(query.From.Id, new InputOnlineFile(product.DataId),
+            caption: "Покупка успешно совершена.");
     }
 
     public bool Compare(CallbackQuery query, User? user)

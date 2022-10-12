@@ -22,9 +22,11 @@ public class EnterProductNameAndAmountCommand : ITextCommand
 
         var data = message.Text!.Split(':', 2);
 
-        if (data.Length != 2 || decimal.TryParse(data[0], out var amount))
+        if (data.Length != 2 || !decimal.TryParse(data[0], out var amount))
         {
-            await client.SendTextMessageAsync(message.From!.Id, "Введите число.", replyMarkup: MainKeyboard.Main);
+            await client.SendTextMessageAsync(message.From!.Id,
+                "Неверный формат.\n\nФормат: <code>99,9:Крутое название</code>", ParseMode.Html,
+                replyMarkup: MainKeyboard.Main);
             return;
         }
 
@@ -32,7 +34,7 @@ public class EnterProductNameAndAmountCommand : ITextCommand
         user.State = State.Main;
         await Task.WhenAll(serviceContainer.UnitOfWork.ProductRepository.Value.AddAsync(product),
             serviceContainer.UnitOfWork.UserRepository.Value.UpdateAsync(user));
-        
+
         await serviceContainer.UnitOfWork.SaveAsync();
         await client.SendTextMessageAsync(message.From!.Id, "Продукт успешно добавлен.");
     }

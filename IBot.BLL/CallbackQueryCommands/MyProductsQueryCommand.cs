@@ -20,10 +20,15 @@ public class MyProductsQueryCommand : ICallbackQueryCommand
             return;
         }
 
-        var page = int.Parse(query.Data![12..]);
+        var page = int.Parse(query.Data![11..]);
         if (page < 1)
         {
             await client.AnswerCallbackQueryAsync(query.Id, "Вы в конце списка.");
+            return;
+        }
+        if (!user.Transactions.Any())
+        {
+            await client.AnswerCallbackQueryAsync(query.Id, "Вы ещё ничего не покупали.");
             return;
         }
 
@@ -31,6 +36,7 @@ public class MyProductsQueryCommand : ICallbackQueryCommand
         if (product == null)
         {
             await client.AnswerCallbackQueryAsync(query.Id, "Предложение не найдено.");
+            await client.SendTextMessageAsync(query.From.Id, "Предложение не найдено.", ParseMode.Html, replyMarkup: ProductKeyboard.GetProduct(product, page, page <= user.Products.Count));
             return;
         }
 

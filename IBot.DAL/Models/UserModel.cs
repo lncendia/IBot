@@ -11,6 +11,9 @@ public class UserModel
     public bool IsBanned { get; set; }
     public long TelegramId { get; set; }
     public decimal Balance { get; set; }
+    
+    public string? TempProductPreview { get; set; }
+    public string? TempProduct { get; set; }
 
     public List<UserProductModel> Products { get; set; } = new();
     public List<UserTransactionModel> Transactions { get; set; } = new();

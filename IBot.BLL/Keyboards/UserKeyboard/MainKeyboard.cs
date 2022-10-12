@@ -6,9 +6,8 @@ public static class MainKeyboard
 {
     public static readonly ReplyKeyboardMarkup MainReplyKeyboard = new(new List<List<KeyboardButton>>
     {
-        new() {new KeyboardButton("👧 Список")},
-        new() {new KeyboardButton("💸 Баланс"),new KeyboardButton("✅ Мои покупки")},
-        new() {new KeyboardButton("📄 Инструкция"), new KeyboardButton("🤝 Поддержка")}
+        new() {new KeyboardButton("👧 Покупки")},
+        new() {new KeyboardButton("💸 Баланс"), new KeyboardButton("🤝 Поддержка")}
     })
     {
         ResizeKeyboard = true,

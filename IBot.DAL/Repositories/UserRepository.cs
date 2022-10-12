@@ -24,9 +24,9 @@ public class UserRepository : IUserRepository
         var user = _mapper.Map<User>(model);
         var x = user.GetType();
         x.GetField("<Id>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(user, model.Id);
-        x.GetField("products", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(user,
+        x.GetField("_products", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(user,
             model.Products.Select(p => p.ProductId).ToList());
-        x.GetField("transactions", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(user,
+        x.GetField("_transactions", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(user,
             model.Transactions.Select(p => p.TransactionId).ToList());
 
         return user;
@@ -121,6 +121,9 @@ public class UserRepository : IUserRepository
 
     private static IMapper GetMapper() => new Mapper(new MapperConfiguration(expr =>
     {
-        expr.CreateMap<User, UserModel>().ReverseMap();
+        expr.CreateMap<User, UserModel>().ForMember(x => x.Products, expression => expression.Ignore())
+            .ForMember(x => x.Transactions, expression => expression.Ignore());
+        expr.CreateMap<UserModel, User>().ForMember(x => x.Products, expression => expression.Ignore())
+            .ForMember(x => x.Transactions, expression => expression.Ignore());
     }));
 }

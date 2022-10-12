@@ -57,6 +57,7 @@ public class UpdateHandler : IUpdateHandler
         new ProductsQueryCommand(),
         new MainMenuQueryCommand(),
         new TopUpAmountQueryCommand(),
+        new DeleteProductQueryCommand()
     };
 
     public async Task HandleAsync(Update update)

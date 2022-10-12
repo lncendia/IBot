@@ -18,11 +18,17 @@ public class MyTransactionsQueryCommand : ICallbackQueryCommand
             await client.AnswerCallbackQueryAsync(query.Id, "Вы должны быть в главное меню.");
             return;
         }
-
-        var page = int.Parse(query.Data![16..]);
+        
+        var page = int.Parse(query.Data![15..]);
         if (page < 1)
         {
             await client.AnswerCallbackQueryAsync(query.Id, "Вы в конце списка.");
+            return;
+        }
+
+        if (!user.Transactions.Any())
+        {
+            await client.AnswerCallbackQueryAsync(query.Id, "Вы ещё не пополняли счёт.");
             return;
         }
 

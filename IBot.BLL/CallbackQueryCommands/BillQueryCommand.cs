@@ -38,5 +38,5 @@ public class BillQueryCommand : ICallbackQueryCommand
         }
     }
 
-    public bool Compare(CallbackQuery query, User? user) => query.Data!.StartsWith("bill");
+    public bool Compare(CallbackQuery query, User? user) => query.Data!.StartsWith("bill_");
 }

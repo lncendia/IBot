@@ -14,8 +14,8 @@ public class PaymentCommand : ITextCommand
         ServiceContainer serviceContainer)
     {
         await client.SendTextMessageAsync(message.Chat.Id,
-            "Выберите, что вы хотите сделать.",
-            replyMarkup: PaymentKeyboard.Subscribes);
+            $"<b>Ваш баланс:</b> <code>{user!.Balance:F2}</code> рублей.\n\n<b>Выберите, что вы хотите сделать.</b>",
+            ParseMode.Html, replyMarkup: PaymentKeyboard.Subscribes);
     }
 
     public bool Compare(Message message, User? user)

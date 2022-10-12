@@ -12,12 +12,13 @@ public class UploadProductCommand : ITextCommand
 {
     public async Task Execute(ITelegramBotClient client, User? user, Message message, ServiceContainer serviceContainer)
     {
-
         user!.TempProduct = message.Document!.FileId;
         user.State = State.EnterNameAndAmountAdmin;
         await serviceContainer.UnitOfWork.UserRepository.Value.UpdateAsync(user);
         await serviceContainer.UnitOfWork.SaveAsync();
-        await client.SendTextMessageAsync(message.From!.Id, "Продукт загружен. Введите его стоимость.", replyMarkup: MainKeyboard.Main);
+        await client.SendTextMessageAsync(message.From!.Id,
+            "Продукт загружен. Введите его название и стоимость.\n\nФормат: <code>99,9:Крутое название</code>",
+            ParseMode.Html, replyMarkup: MainKeyboard.Main);
     }
 
     public bool Compare(Message message, User? user) =>

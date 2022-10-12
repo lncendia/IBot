@@ -4,12 +4,11 @@ using IBot.Core.Entities.Users.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InputFiles;
 using User = IBot.Core.Entities.Users.User;
 
 namespace IBot.BLL.CallbackQueryCommands;
 
-public class ProductQueryCommand : ICallbackQueryCommand
+public class DeleteProductQueryCommand : ICallbackQueryCommand
 {
     public async Task Execute(ITelegramBotClient client, User? user, CallbackQuery query,
         ServiceContainer serviceContainer)
@@ -20,19 +19,20 @@ public class ProductQueryCommand : ICallbackQueryCommand
             return;
         }
 
-        var id = Guid.Parse(query.Data![8..]);
-
+        var id = Guid.Parse(query.Data![7..]);
         var product = await serviceContainer.UnitOfWork.ProductRepository.Value.GetAsync(id);
         if (product == null)
         {
-            await client.AnswerCallbackQueryAsync(query.Id, "Предложение не найдено.");
+            await client.AnswerCallbackQueryAsync(query.Id, "Такого продукта не существует.");
             return;
         }
 
-        await client.SendPhotoAsync(query.From.Id, new InputOnlineFile(product.PreviewId),
-            $"<b>Имя:</b> <code>{product.Name}</code>\n<b>Цена:</b> <code>{product.Cost}</code> руб.",
-            ParseMode.Html, replyMarkup: ProductKeyboard.BuyProduct(product, user.IsAdmin));
+        await serviceContainer.UnitOfWork.ProductRepository.Value.DeleteAsync(product);
+        await serviceContainer.UnitOfWork.SaveAsync();
+
+        await client.AnswerCallbackQueryAsync(query.Id, "Продукт успешно удалён.");
+        await client.DeleteMessageAsync(query.Message!.Chat.Id, query.Message.MessageId);
     }
 
-    public bool Compare(CallbackQuery query, User? user) => query.Data!.StartsWith("product_");
+    public bool Compare(CallbackQuery query, User? user) => user!.IsAdmin && query.Data!.StartsWith("delete_");
 }

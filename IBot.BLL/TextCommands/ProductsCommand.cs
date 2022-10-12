@@ -13,12 +13,10 @@ public class ProductsCommand : ITextCommand
     public async Task Execute(ITelegramBotClient client, User? user, Message message,
         ServiceContainer serviceContainer)
     {
-        const int perPage = 10;
-        var products = await serviceContainer.UnitOfWork.ProductRepository.Value.Find(0, perPage);
-        await client.SendTextMessageAsync(message.Chat.Id, "Вот, что у нас есть.",
-            replyMarkup: ProductKeyboard.Create(products, 1, products.Count == perPage));
+        await client.SendTextMessageAsync(message.Chat.Id, "<b>Выберите, что вы хотите сделать.</b>", ParseMode.Html,
+            replyMarkup: ProductKeyboard.Products);
     }
 
     public bool Compare(Message message, User? user) => message.Type == MessageType.Text &&
-                                                        message.Text == "👧 Список" && user!.State == State.Main;
+                                                        message.Text == "👧 Покупки" && user!.State == State.Main;
 }
