@@ -1,13 +1,15 @@
 using IBot.BLL.Interfaces;
 using IBot.BLL.Keyboards.UserKeyboard;
 using IBot.Core.Entities.Users.Enums;
+using IBot.Core.Entities.Users.Exceptions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.InputFiles;
 using User = IBot.Core.Entities.Users.User;
 
 namespace IBot.BLL.CallbackQueryCommands;
 
-public class TopUpAmountQueryCommand : ICallbackQueryCommand
+public class UploadProductQueryCommand : ICallbackQueryCommand
 {
     public async Task Execute(ITelegramBotClient client, User? user, CallbackQuery query,
         ServiceContainer serviceContainer)
@@ -18,12 +20,12 @@ public class TopUpAmountQueryCommand : ICallbackQueryCommand
             return;
         }
 
-        user.State = State.EnterAmount;
+        await client.EditMessageTextAsync(query.From.Id, query.Message!.MessageId,
+            "Отправьте фото, которое будет отображаться в списке продуктов.", replyMarkup: MainKeyboard.Main);
+        user.State = State.UploadProductPreviewAdmin;
         await serviceContainer.UnitOfWork.UserRepository.Value.UpdateAsync(user);
         await serviceContainer.UnitOfWork.SaveAsync();
-        await client.EditMessageTextAsync(query.From.Id, query.Message!.MessageId,
-            "Введите сумму, на которую хотите пополнить счёт. Минимальная сумма - 100 рублей.", replyMarkup: MainKeyboard.Main);
     }
 
-    public bool Compare(CallbackQuery query, User? user) => query.Data == "topUp";
+    public bool Compare(CallbackQuery query, User? user) => query.Data!.StartsWith("uploadProduct") && user!.IsAdmin;
 }

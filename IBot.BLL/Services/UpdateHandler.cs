@@ -31,7 +31,6 @@ public class UpdateHandler : IUpdateHandler
         new BanCommand(),
         new SendKeyboardCommand(),
         new AdminMailingCommand(),
-        new AdminUploadCommand(),
         new PaymentCommand(),
         new ProductsCommand(),
         new HelpCommand(),
@@ -47,6 +46,7 @@ public class UpdateHandler : IUpdateHandler
 
     private static readonly List<ICallbackQueryCommand> CallbackQueryCommands = new()
     {
+        new BanQueryCommand(),
         new BillQueryCommand(),
         new BuyProductQueryCommand(),
         new TopUpAmountQueryCommand(),
@@ -55,9 +55,11 @@ public class UpdateHandler : IUpdateHandler
         new MyTransactionsQueryCommand(),
         new ProductQueryCommand(),
         new ProductsQueryCommand(),
+        new GetProductQueryCommand(),
         new MainMenuQueryCommand(),
         new TopUpAmountQueryCommand(),
-        new DeleteProductQueryCommand()
+        new DeleteProductQueryCommand(),
+        new UploadProductQueryCommand()
     };
 
     public async Task HandleAsync(Update update)

@@ -22,10 +22,10 @@ public class EnterProductNameAndAmountCommand : ITextCommand
 
         var data = message.Text!.Split(':', 2);
 
-        if (data.Length != 2 || !decimal.TryParse(data[0], out var amount))
+        if (data.Length != 2 || !decimal.TryParse(data[0], out var amount) || data[1].Length > 20)
         {
             await client.SendTextMessageAsync(message.From!.Id,
-                "Неверный формат.\n\nФормат: <code>99,9:Крутое название</code>", ParseMode.Html,
+                "Неверный формат.\n\nФормат: <code>99,9:Крутое название[до 20 символов]</code>", ParseMode.Html,
                 replyMarkup: MainKeyboard.Main);
             return;
         }

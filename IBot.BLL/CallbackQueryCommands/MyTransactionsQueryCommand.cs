@@ -18,7 +18,7 @@ public class MyTransactionsQueryCommand : ICallbackQueryCommand
             await client.AnswerCallbackQueryAsync(query.Id, "Вы должны быть в главное меню.");
             return;
         }
-        
+
         var page = int.Parse(query.Data![15..]);
         if (page < 1)
         {
@@ -26,24 +26,19 @@ public class MyTransactionsQueryCommand : ICallbackQueryCommand
             return;
         }
 
-        if (!user.Transactions.Any())
+        if (user.Transactions.Count < page)
         {
-            await client.AnswerCallbackQueryAsync(query.Id, "Вы ещё не пополняли счёт.");
+            await client.AnswerCallbackQueryAsync(query.Id, "Неверный номер страницы.");
             return;
         }
 
         var transaction =
             await serviceContainer.UnitOfWork.TransactionRepository.Value.GetAsync(user.Transactions[page - 1]);
-        if (transaction == null)
-        {
-            await client.AnswerCallbackQueryAsync(query.Id, "Транзакция не найдена.");
-            return;
-        }
-
-        await client.EditMessageTextAsync(query.From.Id, query.Message!.MessageId,
-            $"<b>Сумма:</b> <code>{transaction.Cost}</code> руб.\n<b>Дата:</b> <code>{transaction.Date.ToLocalTime():g}</code>",
-            ParseMode.Html,
-            replyMarkup: PaymentKeyboard.MyTransactions(page, page <= user.Transactions.Count));
+        var message = transaction == null
+            ? "Транзакция не найдена."
+            : $"<b>Сумма:</b> <code>{transaction.Cost}</code> руб.\n<b>Дата:</b> <code>{transaction.Date.ToLocalTime():g}</code>";
+        await client.EditMessageTextAsync(query.From.Id, query.Message!.MessageId, message, ParseMode.Html,
+            replyMarkup: PaymentKeyboard.MyTransactions(page, page < user.Transactions.Count));
     }
 
     public bool Compare(CallbackQuery query, User? user) => query.Data!.StartsWith("myTransactions_");

@@ -17,7 +17,7 @@ public class UploadProductCommand : ITextCommand
         await serviceContainer.UnitOfWork.UserRepository.Value.UpdateAsync(user);
         await serviceContainer.UnitOfWork.SaveAsync();
         await client.SendTextMessageAsync(message.From!.Id,
-            "Продукт загружен. Введите его название и стоимость.\n\nФормат: <code>99,9:Крутое название</code>",
+            "Продукт загружен. Введите его название и стоимость.\n\nФормат: <code>99,9:Крутое название[до 20 символов]</code>",
             ParseMode.Html, replyMarkup: MainKeyboard.Main);
     }
 

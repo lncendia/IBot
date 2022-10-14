@@ -1,5 +1,3 @@
-
-using IBot.Core.Entities.Transactions;
 using IBot.Core.Interfaces.Services.DTOs;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -10,7 +8,7 @@ public static class PaymentKeyboard
     public static readonly InlineKeyboardMarkup Subscribes = new(
         new List<List<InlineKeyboardButton>>
         {
-            new() {InlineKeyboardButton.WithCallbackData("➕ Пополнить счёт", "buy")},
+            new() {InlineKeyboardButton.WithCallbackData("➕ Пополнить счёт", "topUp")},
             new() {InlineKeyboardButton.WithCallbackData("💵 Мои платежи", "myTransactions_1")}
         });
 

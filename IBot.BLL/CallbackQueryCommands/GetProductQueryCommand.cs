@@ -9,7 +9,7 @@ using User = IBot.Core.Entities.Users.User;
 
 namespace IBot.BLL.CallbackQueryCommands;
 
-public class BuyProductQueryCommand : ICallbackQueryCommand
+public class GetProductQueryCommand : ICallbackQueryCommand
 {
     public async Task Execute(ITelegramBotClient client, User? user, CallbackQuery query,
         ServiceContainer serviceContainer)
@@ -28,32 +28,15 @@ public class BuyProductQueryCommand : ICallbackQueryCommand
             await client.AnswerCallbackQueryAsync(query.Id, "Предложение не найдено.");
             return;
         }
-        if(user.Products.Contains(id)) 
+
+        if (!user.Products.Contains(id))
         {
-            await client.AnswerCallbackQueryAsync(query.Id, "Вы уже купили этот продукт.");
+            await client.AnswerCallbackQueryAsync(query.Id, "Предложение не куплено.");
             return;
         }
 
-        try
-        {
-            user.BuyProduct(product);
-        }
-        catch (NotEnoughMoneyException)
-        {
-            await client.AnswerCallbackQueryAsync(query.Id, "На вашем счету недостаточно средств.");
-            return;
-        }
-
-        await serviceContainer.UnitOfWork.UserRepository.Value.UpdateAsync(user);
-        await serviceContainer.UnitOfWork.SaveAsync();
-
-        await client.AnswerCallbackQueryAsync(query.Id, "Успешно.");
-        await client.SendDocumentAsync(query.From.Id, new InputOnlineFile(product.DataId),
-            caption: "Покупка успешно совершена.");
+        await client.SendDocumentAsync(query.From.Id, new InputOnlineFile(product.DataId), caption: "Успешно.");
     }
 
-    public bool Compare(CallbackQuery query, User? user)
-    {
-        return query.Data!.StartsWith("buy_");
-    }
+    public bool Compare(CallbackQuery query, User? user) => query.Data!.StartsWith("get_");
 }

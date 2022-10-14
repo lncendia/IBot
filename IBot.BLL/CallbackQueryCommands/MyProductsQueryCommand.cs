@@ -26,34 +26,27 @@ public class MyProductsQueryCommand : ICallbackQueryCommand
             await client.AnswerCallbackQueryAsync(query.Id, "Вы в конце списка.");
             return;
         }
-        if (!user.Transactions.Any())
+
+        if (user.Products.Count < page)
         {
-            await client.AnswerCallbackQueryAsync(query.Id, "Вы ещё ничего не покупали.");
+            await client.AnswerCallbackQueryAsync(query.Id, "Неверный номер страницы.");
             return;
         }
 
         var product = await serviceContainer.UnitOfWork.ProductRepository.Value.GetAsync(user.Products[page - 1]);
+        var keyboard = ProductKeyboard.MyProducts(product, page, page < user.Products.Count);
         if (product == null)
-        {
-            await client.AnswerCallbackQueryAsync(query.Id, "Предложение не найдено.");
-            await client.SendTextMessageAsync(query.From.Id, "Предложение не найдено.", ParseMode.Html, replyMarkup: ProductKeyboard.GetProduct(product, page, page <= user.Products.Count));
-            return;
-        }
-
-        if (query.Message!.Type != MessageType.Photo)
-        {
+            await client.SendTextMessageAsync(query.From.Id, "Предложение не найдено.", ParseMode.Html,
+                replyMarkup: keyboard);
+        else if (query.Message!.Type != MessageType.Photo)
             await client.SendPhotoAsync(query.From.Id, new InputOnlineFile(product.PreviewId),
-                $"<b>Имя:</b> <code>{product.Name}</code>", ParseMode.Html,
-                replyMarkup: ProductKeyboard.GetProduct(product, page, page <= user.Products.Count));
-        }
+                $"<b>Название:</b> <code>{product.Name}</code>", ParseMode.Html, replyMarkup: keyboard);
         else
         {
-            var r1 = client.EditMessageCaptionAsync(query.From.Id, query.Message.MessageId,
-                $"<b>Имя:</b> <code>{product.Name}</code>", ParseMode.Html,
-                replyMarkup: ProductKeyboard.GetProduct(product, page, page <= user.Products.Count));
-            var r2 = client.EditMessageMediaAsync(query.From.Id, query.Message.MessageId,
+            await client.EditMessageMediaAsync(query.From.Id, query.Message.MessageId,
                 new InputMediaPhoto(new InputMedia(product.PreviewId)));
-            await Task.WhenAll(r1, r2);
+            await client.EditMessageCaptionAsync(query.From.Id, query.Message.MessageId,
+                $"<b>Название:</b> <code>{product.Name}</code>", ParseMode.Html, replyMarkup: keyboard);
         }
     }
 

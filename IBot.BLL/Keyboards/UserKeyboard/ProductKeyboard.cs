@@ -9,7 +9,15 @@ public static class ProductKeyboard
         new List<List<InlineKeyboardButton>>
         {
             new() {InlineKeyboardButton.WithCallbackData("➕ Показать список", "products_1")},
-            new() {InlineKeyboardButton.WithCallbackData("💵 Мои покупки", "myProducts_1")}
+            new() {InlineKeyboardButton.WithCallbackData("💵 Мои покупки", "myProducts_1")},
+        });
+
+    public static readonly InlineKeyboardMarkup ProductsAdmin = new(
+        new List<List<InlineKeyboardButton>>
+        {
+            new() {InlineKeyboardButton.WithCallbackData("➕ Показать список", "products_1")},
+            new() {InlineKeyboardButton.WithCallbackData("💵 Мои покупки", "myProducts_1")},
+            new() {InlineKeyboardButton.WithCallbackData("⬇ Загрузить", "uploadProduct")}
         });
 
     public static InlineKeyboardMarkup Create(IEnumerable<Product> products, int page, bool hasNext)
@@ -39,20 +47,26 @@ public static class ProductKeyboard
         return new InlineKeyboardMarkup(list);
     }
 
-    public static InlineKeyboardMarkup GetProduct(Product? product, int page, bool hasNext)
+    public static InlineKeyboardMarkup MyProducts(Product? product, int page, bool hasNext)
     {
+        var list = new List<List<InlineKeyboardButton>>();
         var nav = new List<InlineKeyboardButton>();
         if (page != 1) nav.Add(InlineKeyboardButton.WithCallbackData("⬅", "myProducts_" + (page - 1)));
         nav.Add(InlineKeyboardButton.WithCallbackData($"<{page.ToString()}>"));
         if (hasNext) nav.Add(InlineKeyboardButton.WithCallbackData("➡", "myProducts_" + (page + 1)));
 
+        list.Add(nav);
+        if (product == null) return new InlineKeyboardMarkup(list);
+        
         var download = new List<InlineKeyboardButton>
             {InlineKeyboardButton.WithCallbackData("⬇ Скачать", $"get_{product.Id}")};
-        var list = new List<List<InlineKeyboardButton>> {download, nav};
+        list.Insert(0, download);
+
         return new InlineKeyboardMarkup(list);
     }
 
-    private static char GetEmoji() => EmojiList[new Random().Next(0, EmojiList.Length)];
+    private static string GetEmoji() => Emoji[new Random().Next(0, Emoji.Length)];
 
-    private const string EmojiList = "💖💘💟💝💞🔮💌🌌🎆🌠🔥💥🌈☀️🌊💁‍♀️💄💋💍👄👅";
+    private static readonly string[] Emoji =
+        {"💖", "💘", "💟", "💝", "💞", "🔮", "💌", "🌌", "🌃", "👄", "💋", "🌸", "👅", "🍃", "☀", "💍"};
 }
